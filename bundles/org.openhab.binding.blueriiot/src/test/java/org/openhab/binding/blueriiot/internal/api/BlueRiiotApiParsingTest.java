@@ -21,6 +21,7 @@ import java.time.Instant;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.blueriiot.internal.api.dto.BlueDevice;
 import org.openhab.binding.blueriiot.internal.api.dto.LastMeasurementsResponse;
@@ -103,8 +104,11 @@ public class BlueRiiotApiParsingTest {
     private <T> T read(String name, Class<T> type) throws IOException {
         try (InputStream in = getClass().getResourceAsStream(name)) {
             assertNotNull(in, name);
+            @Nullable
             T result = gson.fromJson(new String(in.readAllBytes(), StandardCharsets.UTF_8), type);
-            assertNotNull(result);
+            if (result == null) {
+                throw new IOException("Cannot parse " + name);
+            }
             return result;
         }
     }

@@ -144,9 +144,8 @@ public class BlueRiiotApi {
                     }
                     logger.debug("Cannot read device info of {}: {}", serial, e.getMessage());
                 }
-                applyMeasurements(device,
-                        get("swimming_pool/" + seg(poolId) + "/blue/" + seg(serial)
-                                + "/lastMeasurements?mode=blue_and_strip", LastMeasurementsResponse.class));
+                applyMeasurements(device, get("swimming_pool/" + seg(poolId) + "/blue/" + seg(serial)
+                        + "/lastMeasurements?mode=blue_and_strip", LastMeasurementsResponse.class));
                 devices.put(serial, device);
             }
         }
@@ -235,8 +234,8 @@ public class BlueRiiotApi {
             throw new BlueRiiotException("Not logged in", true);
         }
         URI uri = URI.create(baseUrl + endpoint);
-        Map<String, String> signed = AwsSigV4Signer.sign(method.asString(), uri, ak, sk, sessionToken, REGION,
-                SERVICE, ZonedDateTime.now(ZoneOffset.UTC));
+        Map<String, String> signed = AwsSigV4Signer.sign(method.asString(), uri, ak, sk, sessionToken, REGION, SERVICE,
+                ZonedDateTime.now(ZoneOffset.UTC));
         Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
                 .agent(USER_AGENT).header(HttpHeader.ACCEPT, "application/json")
                 .header(HttpHeader.ACCEPT_LANGUAGE, language);
@@ -286,6 +285,7 @@ public class BlueRiiotApi {
 
     private <T> T parse(String body, Class<T> type) throws BlueRiiotException {
         try {
+            @Nullable
             T result = gson.fromJson(body, type);
             if (result == null) {
                 throw new BlueRiiotException("Empty response from Blue Riiot", false);

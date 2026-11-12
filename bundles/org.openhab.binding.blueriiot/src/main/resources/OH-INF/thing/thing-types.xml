@@ -104,7 +104,8 @@
 			<parameter name="serial" type="text" required="true">
 				<label>Serial Number</label>
 				<description>Serial number of the Blue Connect device as used by the cloud (the "key" in the app, e.g.
-					0A1B2C3D). Listed in the bridge property "devices".</description>
+					0A1B2C3D).
+					Listed in the bridge property "devices".</description>
 			</parameter>
 			<parameter name="fetchInterval" type="integer" min="0" max="168" unit="h">
 				<label>Fetch Interval</label>

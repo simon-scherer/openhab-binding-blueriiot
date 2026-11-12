@@ -37,9 +37,10 @@ public class AwsSigV4SignerTest {
         Map<String, String> headers = AwsSigV4Signer.sign("GET", URI.create("https://example.amazonaws.com/"),
                 "AKIDEXAMPLE", "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY", null, "us-east-1", "service",
                 ZonedDateTime.of(2015, 8, 30, 12, 36, 0, 0, ZoneOffset.UTC));
-        assertEquals("AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20150830/us-east-1/service/aws4_request, "
-                + "SignedHeaders=host;x-amz-date, "
-                + "Signature=5fa00fa31553b73ebf1942676e86291e8372ff2a2260956d9b8aae1d763fbf31",
+        assertEquals(
+                "AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20150830/us-east-1/service/aws4_request, "
+                        + "SignedHeaders=host;x-amz-date, "
+                        + "Signature=5fa00fa31553b73ebf1942676e86291e8372ff2a2260956d9b8aae1d763fbf31",
                 headers.get("Authorization"));
         assertEquals("20150830T123600Z", headers.get("x-amz-date"));
     }
@@ -56,8 +57,8 @@ public class AwsSigV4SignerTest {
     @Test
     public void getWithoutQuery() {
         Map<String, String> headers = AwsSigV4Signer.sign("GET",
-                URI.create("https://api.riiotlabs.com/prod/swimming_pool"), "AKIAFAKE", "secretsecret",
-                "tok/en+abc==", "eu-west-1", "execute-api", NOW);
+                URI.create("https://api.riiotlabs.com/prod/swimming_pool"), "AKIAFAKE", "secretsecret", "tok/en+abc==",
+                "eu-west-1", "execute-api", NOW);
         assertSignature("14bcbe6458ec4853a6b7c4261b6390f5525e2142674032403e61ea6be7d974d0", headers);
     }
 

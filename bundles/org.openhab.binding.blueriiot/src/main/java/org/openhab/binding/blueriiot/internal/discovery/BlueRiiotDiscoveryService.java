@@ -67,7 +67,8 @@ public class BlueRiiotDiscoveryService extends AbstractThingHandlerDiscoveryServ
     public void publish(AccountData data) {
         ThingUID bridgeUID = thingHandler.getThing().getUID();
         for (DeviceData device : data.allDevices()) {
-            ThingUID uid = new ThingUID(THING_TYPE_BLUECONNECT, bridgeUID, device.serial.replaceAll("[^A-Za-z0-9_-]", "_"));
+            ThingUID uid = new ThingUID(THING_TYPE_BLUECONNECT, bridgeUID,
+                    device.serial.replaceAll("[^A-Za-z0-9_-]", "_"));
             String product = device.productName;
             thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
                     .withProperty(PROPERTY_SERIAL, device.serial).withRepresentationProperty(PROPERTY_SERIAL)

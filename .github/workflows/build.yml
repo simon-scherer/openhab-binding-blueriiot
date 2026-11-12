@@ -74,6 +74,16 @@ jobs:
         # openhab-addons tag itself do not pass spotless, so the check is skipped here
         run: mvn -B -ntp clean install -pl :$BUNDLE -am -DskipTests=false -Dspotless.check.skip=true
 
+      - name: Static code analysis findings
+        if: always()
+        run: |
+          report=openhab-addons/bundles/$BUNDLE/target/code-analysis/report.html
+          if [ -f "$report" ]; then
+            sed -e 's/<[^>]*>/ /g' -e 's/&nbsp;/ /g' "$report" | tr -s ' ' | grep -v '^ *$' | head -200
+          else
+            echo "no report at $report"
+          fi
+
       - name: Collect results
         if: always()
         run: |
