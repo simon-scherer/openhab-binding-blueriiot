@@ -1,0 +1,16 @@
+Group    gPool                 "Pool"                      <water>        ["SwimmingPool"]
+
+Number:Temperature        Pool_Temperatur       "Wassertemperatur [%.1f °C]"    <temperature>  (gPool) ["Measurement","Temperature"] { channel="blueriiot:blueconnect:konto:pool:temperature" }
+Number                    Pool_pH               "pH-Wert [%.2f]"                <water>        (gPool) ["Measurement","Water"]       { channel="blueriiot:blueconnect:konto:pool:ph" }
+Number:ElectricPotential  Pool_Redox            "Redox [%.0f mV]"               <energy>       (gPool) ["Measurement","Voltage"]     { channel="blueriiot:blueconnect:konto:pool:orp", unit="mV" }
+DateTime                  Pool_LetzteMessung    "Letzte Messung [%1$td.%1$tm. %1$tH:%1$tM]" <time> (gPool) ["Status","Timestamp"]  { channel="blueriiot:blueconnect:konto:pool:last-measurement" }
+Switch                    Pool_BatterieSchwach  "Batterie schwach"              <lowbattery>   (gPool) ["Alarm","LowBattery"]        { channel="blueriiot:blueconnect:konto:pool:battery-low" }
+
+// ohne Semantik-Tags
+String                    Pool_pH_Status        "pH-Status [MAP(blueriiot.map):%s]"     (gPool) { channel="blueriiot:blueconnect:konto:pool:ph-status" }
+String                    Pool_Redox_Status     "Redox-Status [MAP(blueriiot.map):%s]"  (gPool) { channel="blueriiot:blueconnect:konto:pool:orp-status" }
+Number                    Pool_FreiesChlor      "Freies Chlor [%.1f mg/l]"              (gPool) { channel="blueriiot:blueconnect:konto:pool:free-chlorine" }
+Number                    Pool_Alkalinitaet     "Alkalinität [%.0f mg/l]"               (gPool) { channel="blueriiot:blueconnect:konto:pool:alkalinity" }
+
+// Neuesten Messwert vom Blue Extender abholen (springt automatisch auf AUS zurück)
+Switch                    Pool_MessungAnfordern "Messwert abholen"      <switch>  (gPool) ["Control"]  { channel="blueriiot:blueconnect:konto:pool:fetch-measurement" }

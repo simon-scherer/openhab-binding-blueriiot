@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="blueriiot" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Blue Riiot Binding</name>
+	<description>Pool water measurements of Blue Riiot / Blue Connect sensors via the (unofficial) Blue Riiot cloud API.</description>
+	<connection>cloud</connection>
+
+</addon:addon>

@@ -1,0 +1,4 @@
+Bridge blueriiot:account:konto "Blue Riiot Konto" [ email="DEINE@MAIL.DE", password="DEIN_PASSWORT", refreshInterval=30 ] {
+    // serial = "Schlüssel" aus der App (nicht die aufgedruckte Seriennummer); fetchInterval nur mit Blue Extender
+    Thing blueconnect pool "Blue Connect Pool" [ serial="0A1B2C3D", fetchInterval=12 ]
+}

@@ -1,0 +1,131 @@
+name: Build
+
+# Builds the binding with Maven inside an openhab-addons checkout, i.e. with the same parent POM, bnd, null
+# analysis, static code analysis (SAT) and formatting rules as an official add-on.
+# A release with the JAR is published for
+#   - a pushed tag v*,
+#   - a push to main whose commit message starts with "Release v<version>" (e.g. "Release v5.2.4-beta.1"),
+#   - a manual run (Actions -> Build -> Run workflow) with a tag name.
+# Tags with a suffix (v5.2.4-beta.1) become pre-releases.
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag, e.g. v5.2.4 (empty = build only)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+env:
+  OPENHAB_ADDONS_REF: '5.2.4'
+  BUNDLE: org.openhab.binding.blueriiot
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout binding
+        uses: actions/checkout@v4
+        with:
+          path: binding
+
+      - name: Checkout openhab-addons ${{ env.OPENHAB_ADDONS_REF }}
+        uses: actions/checkout@v4
+        with:
+          repository: openhab/openhab-addons
+          ref: ${{ env.OPENHAB_ADDONS_REF }}
+          path: openhab-addons
+          fetch-depth: 1
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: binding/bundles/*/pom.xml
+
+      - name: Add bundle to openhab-addons
+        run: |
+          cp -r binding/bundles/$BUNDLE openhab-addons/bundles/
+          sed -i "0,/<modules>/s||<modules>\n    <module>$BUNDLE</module>|" openhab-addons/bundles/pom.xml
+          grep -n "$BUNDLE" openhab-addons/bundles/pom.xml
+
+      - name: Formatting (spotless)
+        working-directory: openhab-addons
+        run: |
+          mvn -B -ntp spotless:apply -pl :$BUNDLE
+          diff -ru ../binding/bundles/$BUNDLE bundles/$BUNDLE -x target > ../spotless.diff || true
+          if [ -s ../spotless.diff ]; then
+            echo "::warning::Formatting differs from the openHAB rules, see artifact reports/spotless.diff"
+            cat ../spotless.diff
+          fi
+
+      - name: Build with checks
+        working-directory: openhab-addons
+        # formatting was applied and reported in the previous step; the release poms of the
+        # openhab-addons tag itself do not pass spotless, so the check is skipped here
+        run: mvn -B -ntp clean install -pl :$BUNDLE -am -DskipTests=false -Dspotless.check.skip=true
+
+      - name: Collect results
+        if: always()
+        run: |
+          mkdir -p out
+          cp openhab-addons/bundles/$BUNDLE/target/$BUNDLE-*.jar out/ 2>/dev/null || true
+          rm -f out/*-sources.jar out/*-javadoc.jar
+          cp -r openhab-addons/bundles/$BUNDLE/target/code-analysis out/ 2>/dev/null || true
+          cp spotless.diff out/ 2>/dev/null || true
+          ls -la out
+
+      - name: Upload JAR
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jar
+          path: out/*.jar
+          if-no-files-found: ignore
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            out/code-analysis
+            out/spotless.diff
+          if-no-files-found: ignore
+
+      - name: Determine release tag
+        id: tag
+        env:
+          INPUT_TAG: ${{ github.event.inputs.tag }}
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+        run: |
+          tag=""
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            tag="$GITHUB_REF_NAME"
+          elif [[ -n "$INPUT_TAG" ]]; then
+            tag="$INPUT_TAG"
+          elif [[ "$GITHUB_EVENT_NAME" == push && "$COMMIT_MSG" =~ ^Release\ (v[0-9][0-9A-Za-z.-]*) ]]; then
+            tag="${BASH_REMATCH[1]}"
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "release tag: ${tag:-none}"
+
+      - name: Release
+        if: steps.tag.outputs.tag != ''
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: Blue Riiot Binding ${{ steps.tag.outputs.tag }}
+          files: out/*.jar
+          prerelease: ${{ contains(steps.tag.outputs.tag, '-') }}
+          generate_release_notes: true

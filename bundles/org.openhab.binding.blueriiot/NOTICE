@@ -1,0 +1,29 @@
+This content is produced and maintained by the openHAB project.
+
+* Project home: https://www.openhab.org
+
+== Declared Project Licenses
+
+This program and the accompanying materials are made available under the terms
+of the Eclipse Public License 2.0 which is available at
+https://www.eclipse.org/legal/epl-2.0/.
+
+== Source Code
+
+https://github.com/simon-scherer/openhab-binding-blueriiot
+
+== Third-party Content
+
+No third-party code is included. The endpoints of the undocumented Blue Riiot
+cloud API were taken from these projects:
+
+* ha-pool-management-blueriiot (Home Assistant integration, MIT License)
+  https://github.com/ChrisbyChA/ha-pool-management-blueriiot
+* MBW.Client.BlueRiiotApi (.NET client)
+  https://github.com/LordMike/MBW.Client.BlueRiiotApi
+
+== Trademarks
+
+Blue Riiot and Blue Connect are trademarks of their respective owner. This
+binding is not affiliated with, endorsed or supported by Blue Riiot or Fluidra.
+It uses the same, undocumented interface as the Blue Connect app.

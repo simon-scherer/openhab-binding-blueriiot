@@ -1,0 +1,189 @@
+# Pool-Page für die Main UI: neue Layout-Page anlegen, Tab "Code" öffnen, diesen Inhalt einfügen.
+# Nutzt die Items aus examples/conf/items/blueriiot.items.
+config:
+  label: Pool
+  icon: material:pool
+  sidebar: true
+  order: "10"
+blocks:
+  - component: oh-block
+    config:
+      title: Wasserwerte
+    slots:
+      default:
+        - component: oh-grid-row
+          config: {}
+          slots:
+            default:
+              # ---------- Temperatur ----------
+              - component: oh-grid-col
+                config:
+                  width: "100"
+                  medium: "33"
+                slots:
+                  default:
+                    - component: oh-gauge-card
+                      config:
+                        title: Wassertemperatur
+                        item: Pool_Temperatur
+                        min: 5
+                        max: 35
+                        type: semicircle
+                        size: 220
+                        borderWidth: 18
+                        borderBgColor: "=themeOptions.dark === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'"
+                        valueTextColor: "=themeOptions.dark === 'dark' ? '#ffffff' : '#1c1c1e'"
+                        labelTextColor: "=themeOptions.dark === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.55)'"
+                        borderColor: "=['NULL','UNDEF'].indexOf(items.Pool_Temperatur.state) >= 0 ? 'gray' : Number.parseFloat(items.Pool_Temperatur.state) < 20 ? '#29b6f6' : Number.parseFloat(items.Pool_Temperatur.state) <= 30 ? '#26c6a0' : '#ffb74d'"
+                        valueText: "=@'Pool_Temperatur'"
+                        valueFontSize: 32
+                        labelText: Ziel 24–28 °C
+                        labelFontSize: 14
+              # ---------- pH ----------
+              - component: oh-grid-col
+                config:
+                  width: "100"
+                  medium: "33"
+                slots:
+                  default:
+                    - component: oh-gauge-card
+                      config:
+                        title: pH-Wert
+                        item: Pool_pH
+                        min: 6.4
+                        max: 8.6
+                        type: semicircle
+                        size: 220
+                        borderWidth: 18
+                        borderBgColor: "=themeOptions.dark === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'"
+                        valueTextColor: "=themeOptions.dark === 'dark' ? '#ffffff' : '#1c1c1e'"
+                        labelTextColor: "=themeOptions.dark === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.55)'"
+                        borderColor: "=items.Pool_pH_Status.state === 'OK' ? '#26c6a0' : items.Pool_pH_Status.state === 'WARNING' ? '#ffb74d' : items.Pool_pH_Status.state === 'CRITICAL' ? '#ef5350' : 'gray'"
+                        valueText: "=@'Pool_pH'"
+                        valueFontSize: 32
+                        labelText: "='Ziel 7,2–7,6 · ' + @'Pool_pH_Status'"
+                        labelFontSize: 14
+              # ---------- Redox ----------
+              - component: oh-grid-col
+                config:
+                  width: "100"
+                  medium: "33"
+                slots:
+                  default:
+                    - component: oh-gauge-card
+                      config:
+                        title: Redox (Desinfektion)
+                        item: Pool_Redox
+                        min: 200
+                        max: 900
+                        type: semicircle
+                        size: 220
+                        borderWidth: 18
+                        borderBgColor: "=themeOptions.dark === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'"
+                        valueTextColor: "=themeOptions.dark === 'dark' ? '#ffffff' : '#1c1c1e'"
+                        labelTextColor: "=themeOptions.dark === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.55)'"
+                        borderColor: "=items.Pool_Redox_Status.state === 'OK' ? '#26c6a0' : items.Pool_Redox_Status.state === 'WARNING' ? '#ffb74d' : items.Pool_Redox_Status.state === 'CRITICAL' ? '#ef5350' : 'gray'"
+                        valueText: "=@'Pool_Redox'"
+                        valueFontSize: 32
+                        labelText: "='Ziel 650–750 mV · ' + @'Pool_Redox_Status'"
+                        labelFontSize: 14
+  - component: oh-block
+    config:
+      title: Verlauf (24 h)
+    slots:
+      default:
+        - component: oh-grid-row
+          config: {}
+          slots:
+            default:
+              - component: oh-grid-col
+                config:
+                  width: "100"
+                  medium: "33"
+                slots:
+                  default:
+                    - component: oh-label-card
+                      config:
+                        title: Temperatur
+                        item: Pool_Temperatur
+                        trendItem: Pool_Temperatur
+                        trendStrokeWidth: 4
+                        trendGradient: "=['#29b6f6', '#4fc3f7']"
+                        iconColor: blue
+                        icon: f7:thermometer
+                        fontSize: 24px
+              - component: oh-grid-col
+                config:
+                  width: "100"
+                  medium: "33"
+                slots:
+                  default:
+                    - component: oh-label-card
+                      config:
+                        title: pH
+                        item: Pool_pH
+                        trendItem: Pool_pH
+                        trendStrokeWidth: 4
+                        trendGradient: "=['#26c6a0', '#80cbc4']"
+                        iconColor: teal
+                        icon: f7:drop
+                        fontSize: 24px
+              - component: oh-grid-col
+                config:
+                  width: "100"
+                  medium: "33"
+                slots:
+                  default:
+                    - component: oh-label-card
+                      config:
+                        title: Redox
+                        item: Pool_Redox
+                        trendItem: Pool_Redox
+                        trendStrokeWidth: 4
+                        trendGradient: "=['#b388ff', '#7c4dff']"
+                        iconColor: purple
+                        icon: f7:bolt
+                        fontSize: 24px
+  - component: oh-block
+    config:
+      title: Blue Connect
+    slots:
+      default:
+        - component: oh-grid-row
+          config: {}
+          slots:
+            default:
+              # ---------- Letzte Messung ----------
+              - component: oh-grid-col
+                config:
+                  width: "100"
+                  medium: "50"
+                slots:
+                  default:
+                    - component: oh-label-card
+                      config:
+                        title: Letzte Messung
+                        icon: f7:clock
+                        iconColor: "=(items.Pool_LetzteMessung.state === 'NULL' || items.Pool_LetzteMessung.state === 'UNDEF') ? 'gray' : dayjs().diff(dayjs(items.Pool_LetzteMessung.state), 'hour') >= 6 ? 'orange' : 'teal'"
+                        label: "=(items.Pool_LetzteMessung.state === 'NULL' || items.Pool_LetzteMessung.state === 'UNDEF') ? '–' : dayjs(items.Pool_LetzteMessung.state).fromNow()"
+                        footer: "='Gemessen ' + @'Pool_LetzteMessung' + ' · Antippen: neuesten Wert abholen'"
+                        action: command
+                        actionItem: Pool_MessungAnfordern
+                        actionCommand: "ON"
+                        actionConfirmation: Neuesten Messwert vom Blue Extender abholen?
+                        actionFeedback: Wird abgeholt – neue Werte in ca. 2–6 Minuten
+                        fontSize: 22px
+              # ---------- Batterie ----------
+              - component: oh-grid-col
+                config:
+                  width: "100"
+                  medium: "50"
+                slots:
+                  default:
+                    - component: oh-label-card
+                      config:
+                        title: Batterie
+                        icon: "=items.Pool_BatterieSchwach.state === 'ON' ? 'f7:battery_25' : 'f7:battery_100'"
+                        iconColor: "=items.Pool_BatterieSchwach.state === 'ON' ? 'red' : 'teal'"
+                        label: "=items.Pool_BatterieSchwach.state === 'ON' ? 'Schwach – bald laden' : items.Pool_BatterieSchwach.state === 'OFF' ? 'OK' : '–'"
+                        fontSize: 22px

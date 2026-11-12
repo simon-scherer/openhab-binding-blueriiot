@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="blueriiot"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>Blue Riiot Account</label>
+		<description>Blue Connect cloud account (same login as the Blue Connect app).</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<config-description>
+			<parameter name="email" type="text" required="true">
+				<context>email</context>
+				<label>E-Mail</label>
+				<description>E-mail address of the Blue Connect account.</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password of the Blue Connect account.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="5" max="720" unit="min">
+				<label>Refresh Interval</label>
+				<description>Polling interval in minutes. The sensor itself only measures a few times per day.</description>
+				<default>30</default>
+			</parameter>
+			<parameter name="language" type="text">
+				<label>Language</label>
+				<description>Language for texts returned by the cloud.</description>
+				<default>en</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="blueconnect">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>Blue Connect</label>
+		<description>Blue Connect pool water analyser.</description>
+		<semantic-equipment-tag>WaterQualitySensor</semantic-equipment-tag>
+
+		<channels>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="temperature-status" typeId="measurement-status">
+				<label>Temperature Status</label>
+			</channel>
+			<channel id="ph" typeId="ph"/>
+			<channel id="ph-status" typeId="measurement-status">
+				<label>pH Status</label>
+			</channel>
+			<channel id="orp" typeId="orp"/>
+			<channel id="orp-status" typeId="measurement-status">
+				<label>ORP Status</label>
+			</channel>
+			<channel id="conductivity" typeId="conductivity"/>
+			<channel id="salinity" typeId="salinity"/>
+			<channel id="salt" typeId="salt"/>
+			<channel id="tds" typeId="tds"/>
+			<channel id="free-chlorine" typeId="mgl">
+				<label>Free Chlorine</label>
+				<description>Free chlorine (test strip).</description>
+			</channel>
+			<channel id="free-chlorine-status" typeId="measurement-status">
+				<label>Free Chlorine Status</label>
+			</channel>
+			<channel id="combined-chlorine" typeId="mgl">
+				<label>Combined Chlorine</label>
+				<description>Combined chlorine (test strip).</description>
+			</channel>
+			<channel id="total-chlorine" typeId="mgl">
+				<label>Total Chlorine</label>
+				<description>Total chlorine (test strip).</description>
+			</channel>
+			<channel id="alkalinity" typeId="mgl">
+				<label>Total Alkalinity</label>
+				<description>Total alkalinity TA (test strip).</description>
+			</channel>
+			<channel id="alkalinity-status" typeId="measurement-status">
+				<label>Alkalinity Status</label>
+			</channel>
+			<channel id="cyanuric-acid" typeId="mgl">
+				<label>Cyanuric Acid</label>
+				<description>Cyanuric acid / stabiliser (test strip).</description>
+			</channel>
+			<channel id="calcium-hardness" typeId="mgl">
+				<label>Calcium Hardness</label>
+				<description>Calcium hardness (test strip).</description>
+			</channel>
+			<channel id="last-measurement" typeId="last-measurement"/>
+			<channel id="battery-low" typeId="system.low-battery"/>
+			<channel id="fetch-measurement" typeId="fetch-measurement"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Blue Riiot</property>
+		</properties>
+		<representation-property>serial</representation-property>
+
+		<config-description>
+			<parameter name="serial" type="text" required="true">
+				<label>Serial Number</label>
+				<description>Serial number of the Blue Connect device as used by the cloud (the "key" in the app, e.g.
+					0A1B2C3D). Listed in the bridge property "devices".</description>
+			</parameter>
+			<parameter name="fetchInterval" type="integer" min="0" max="168" unit="h">
+				<label>Fetch Interval</label>
+				<description>Every n hours, ask the Blue Extender to hand over its newest measurement (0 = off). Requires a Blue
+					Extender.</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="temperature">
+		<item-type unitHint="°C">Number:Temperature</item-type>
+		<label>Water Temperature</label>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ph">
+		<item-type>Number</item-type>
+		<label>pH</label>
+		<description>pH value of the water.</description>
+		<category>Water</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f"/>
+	</channel-type>
+
+	<channel-type id="orp">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>ORP / Redox</label>
+		<description>Oxidation-reduction potential (disinfection indicator).</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f mV"/>
+	</channel-type>
+
+	<channel-type id="conductivity" advanced="true">
+		<item-type>Number</item-type>
+		<label>Conductivity</label>
+		<description>Electrical conductivity in µS/cm.</description>
+		<state readOnly="true" pattern="%.0f µS/cm"/>
+	</channel-type>
+
+	<channel-type id="salinity" advanced="true">
+		<item-type>Number</item-type>
+		<label>Salinity</label>
+		<description>Salinity in g/l (salt water pools).</description>
+		<state readOnly="true" pattern="%.1f g/l"/>
+	</channel-type>
+
+	<channel-type id="salt" advanced="true">
+		<item-type>Number</item-type>
+		<label>Salt</label>
+		<description>Salt content in ppm.</description>
+		<state readOnly="true" pattern="%.0f ppm"/>
+	</channel-type>
+
+	<channel-type id="tds" advanced="true">
+		<item-type>Number</item-type>
+		<label>TDS</label>
+		<description>Total dissolved solids in ppm.</description>
+		<state readOnly="true" pattern="%.0f ppm"/>
+	</channel-type>
+
+	<channel-type id="mgl" advanced="true">
+		<item-type>Number</item-type>
+		<label>Concentration</label>
+		<description>Concentration in mg/l (from manual test strip entries).</description>
+		<state readOnly="true" pattern="%.1f mg/l"/>
+	</channel-type>
+
+	<channel-type id="measurement-status">
+		<item-type>String</item-type>
+		<label>Measurement Status</label>
+		<description>Assessment by the cloud ranges: OK, WARNING or CRITICAL.</description>
+		<state readOnly="true">
+			<options>
+				<option value="OK">OK</option>
+				<option value="WARNING">Warning</option>
+				<option value="CRITICAL">Critical</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="last-measurement">
+		<item-type>DateTime</item-type>
+		<label>Last Measurement</label>
+		<description>Time of the last measurement that reached the cloud.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY %1$tH:%1$tM"/>
+	</channel-type>
+
+	<channel-type id="fetch-measurement">
+		<item-type>Switch</item-type>
+		<label>Fetch Newest Measurement</label>
+		<description>ON asks the Blue Extender to hand over its newest stored measurement (like "Wi-Fi" in the app). It does
+			not start a new measurement. Resets to OFF.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+</thing:thing-descriptions>
